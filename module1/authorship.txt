@@ -1,0 +1,3 @@
+lib_robotis_hack.py - Author: Georgia Tech. Source: 607 Dropbox
+twitch_init.py - Author: Patrick Pilarski. Source: 607 Dropbox
+module1.py, visdom_example.py - Author: Cam Linke
