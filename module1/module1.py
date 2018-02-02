@@ -13,11 +13,11 @@ vis = visdom.Visdom()
 vis.close(win=None)
 
 
-D = USB2Dynamixel_Device(dev_name="/dev/tty.usbserial-AI03QEMU",baudrate=1000000)
+# D = USB2Dynamixel_Device(dev_name="/dev/tty.usbserial-AI03QEMU",baudrate=1000000)
 
-s_list = find_servos(D)
-s1 = Robotis_Servo(D,s_list[0])
-s2 = Robotis_Servo(D,s_list[1])
+# s_list = find_servos(D)
+# s1 = Robotis_Servo(D,s_list[0])
+# s2 = Robotis_Servo(D,s_list[1])
 
 
 def logscaled(num):
@@ -32,9 +32,28 @@ def log_data(data, filename):
     with open(filename, 'ab') as f:
         np.savetxt(f, data, delimiter=",", newline=" ", footer="\n", comments="")
 
+def plot_offline_data(filename):
+    data =  np.loadtxt(filename)
+    columns = [data[:,c] for c in range(1, len(data[0]))]
+    win = vis.line(
+        Y=np.column_stack(columns),
+        opts=dict(
+            # fillarea=True,
+            showlegend=True,
+            width=400,
+            height=325,
+            xlabel='Time',
+            ylabel='Reading',
+            title='Servo 1',
+            marginleft=10,
+            marginright=10,
+            marginbottom=30,
+            margintop=10,
+        ),
+    )
+
 
 def run():
-
 
     windowed_angle1 = collections.deque(100*[0], 100)
     windowed_load1 = collections.deque(100*[0], 100)
@@ -204,7 +223,6 @@ def run():
         )
 
 
-
-
 if __name__ == '__main__':
-    run()
+    # run()
+    plot_offline_data('servo1.dat')
