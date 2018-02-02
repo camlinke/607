@@ -224,5 +224,4 @@ def run():
 
 
 if __name__ == '__main__':
-    # run()
-    plot_offline_data('servo1.dat')
+    run()
