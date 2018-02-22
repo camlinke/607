@@ -7,6 +7,11 @@ import time
 vis = visdom.Visdom()
 vis.close(win=None)
 
+D = USB2Dynamixel_Device(dev_name="/dev/tty.usbserial-AI03QEMU",baudrate=1000000)
+
+s_list = find_servos(D)
+s1 = Robotis_Servo(D,s_list[0])
+
 load_window = collections.deque(100*[0], 100)
 predicted_results_window_td = collections.deque(100*[0], 100)
 predicted_results_window_gtd = collections.deque(100*[0], 100)
@@ -89,7 +94,7 @@ class BinnedApproximator:
 actions = np.array([0, 1, 2])
 current_action = 1
 previous_action = 1
-# s1.move_angle(2, blocking=False)
+s1.move_angle(2, blocking=False)
 
 # w = np.zeros((actions.shape[0], num_bins))
 
@@ -129,17 +134,26 @@ last_gamma_zero_angle = 0
 # Verifier Setup
 counter_td = 0
 counter_gtd = 0
-right_max = 11
-left_max = 11
+right_max = 15
+left_max = 15
+counter_td_max = 30
 restart = False
+moving_away = False
 
 
 for i in range(10000):
-    # time.sleep(1)
-    angle = data[i][2]
-    load  = data[i][3]
+
+    if np.isclose([s1.read_angle()], [-2], atol=0.01)[0]:
+        current_action = 1
+        s1.move_angle(2, blocking=False)
+
+    if np.isclose([s1.read_angle()], [2], atol=0.01)[0]:
+        current_action = 2
+        s1.move_angle(-2, blocking=False)
+
+    angle = s1.read_angle()
+    load  = s1.read_load()
     bins = approximator.approximate(angle)
-    current_action = int(data[i][1])
 
     # Setup for zero angle cumulant used for verifier 2 and 3
     zero_angle_cumulant = 1
@@ -155,7 +169,7 @@ for i in range(10000):
         restart = True
         # moving_away = True
     elif restart:
-        counter_td = 22
+        counter_td = counter_td_max
         restart = False
     else:
         counter_td -= 1
