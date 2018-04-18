@@ -1,18 +1,36 @@
 <html>
     <head>
+        <style>
+            .container {
+                width: 1250px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .left {
+                margin-right: 20px;
+            }
+            .right {
+                margin-left: 20px;
+            }
+        </style>
 
     </head>
     <body>
-        <canvas id="tv" width="400" height="300"></canvas>
-        <canvas id="solid" width="400" height="300"></canvas>
-        <canvas id="slowChange" width="400" height="300"></canvas>
+        <div class="container">
+            <canvas id="tv" width="400" class="left" height="300"></canvas>
+            <canvas id="solid" width="400" class="center" height="300"></canvas>
+            <canvas id="slowChange" width="400" class="right" height="300"></canvas>
+        </div>
         <script>
             var canvas = null;
             var context = null;
             var canvas2 = null;
             var context2 = null;
+            var canvas3 = null;
+            var context3 = null;
             var time = 0;
             var intervalId = 0;
+            var mu = 0;
 
             var makeNoise = function() {
               var imgd = context.createImageData(canvas.width, canvas.height);
@@ -33,11 +51,11 @@
                 var pix = imgd.data;
 
                 for (var i = 0; i < pix.length; i++) {
-                    pix[i] = 205;
+                    pix[i] = 34;
                 }
 
                 context2.putImageData(imgd, 0, 0);
-                time = (time + 1) % canvas.height;
+                // time = (time + 1) % canvas.height;
             };
 
             var slowChange = function () {
@@ -45,24 +63,28 @@
                 var pix = imgd.data;
 
                 for (var i = 0; i < pix.length; i++) {
-                    pix[i] = 205;
+                    pix[i] = mu;
                 }
+                mu = mu + 1;
 
-                context2.putImageData(imgd, 0, 0);
-                time = (time + 1) % canvas.height;
+                context3.putImageData(imgd, 0, 0);
+                // time = (time + 1) % canvas.height;
             };
 
             var setup = function() {
               canvas = document.getElementById("tv");
               context = canvas.getContext("2d");
-              canvas2 = document.getElementById("slowChange");
+              canvas2 = document.getElementById("solid");
               context2 = canvas2.getContext("2d");
+              canvas3 = document.getElementById("slowChange");
+              context3 = canvas3.getContext("2d");
             };
 
             setup();
-            intervalId = setInterval(makeNoise, 50);
-            intervalId = setInterval(solid, 50);
-            intervalId = setInterval(slowChange, 50);
+            intervalId = 0;
+            setInterval(makeNoise, 50);
+            setInterval(solid, 50);
+            setInterval(slowChange, 500);
         </script>
     </body>
 </html>
