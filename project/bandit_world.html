@@ -31,6 +31,7 @@
             var time = 0;
             var intervalId = 0;
             var mu = 0;
+            var increasing = true;
 
             var makeNoise = function() {
               var imgd = context.createImageData(canvas.width, canvas.height);
@@ -47,11 +48,11 @@
             };
 
             var solid = function () {
-                var imgd = context.createImageData(canvas.width, canvas.height);
+                var imgd = context2.createImageData(canvas.width, canvas.height);
                 var pix = imgd.data;
 
                 for (var i = 0; i < pix.length; i++) {
-                    pix[i] = 34;
+                    pix[i] = 0;
                 }
 
                 context2.putImageData(imgd, 0, 0);
@@ -59,13 +60,33 @@
             };
 
             var slowChange = function () {
-                var imgd = context.createImageData(canvas.width, canvas.height);
+                var imgd = context3.createImageData(canvas.width, canvas.height);
                 var pix = imgd.data;
+                // var pix = imgd;
 
-                for (var i = 0; i < pix.length; i++) {
-                    pix[i] = mu;
+                for (var i = 0; i < pix.length; i+=4) {
+                    pix[i + 0] = 0;
+                    pix[i + 1] = mu;
+                    pix[i + 2] = 0;
+                    pix[i + 3] = 255;
                 }
-                mu = mu + 1;
+
+                if (increasing) {
+                    if (mu < 255) {
+                        mu++;
+                    } else {
+                        increasing = false;
+                    }
+                }
+
+                if (!increasing) {
+                    if (mu > 0) {
+                        mu--;
+                    } else {
+                        increasing = true;
+                    }
+                }
+
 
                 context3.putImageData(imgd, 0, 0);
                 // time = (time + 1) % canvas.height;
